@@ -1,8 +1,7 @@
 import json
-import requests
-
 
 def getParameters():
+    
     json_file = open('config/mmd_config.json', 'r')
     parameters = json.load(json_file)
     json_file.close()
