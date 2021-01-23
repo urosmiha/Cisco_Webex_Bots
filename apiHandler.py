@@ -2,10 +2,11 @@ import json
 import requests
 
 def apiCallReturnJSON(method, url, token, content_type, payload):
-
-    # TODO: Check if the token is still valid
-
-    print("Token: {}".format(token))
+    '''
+    Takes any method with adequeste url, token, payload.
+    Runs API call based on parameters.
+    Returns json object.
+    '''
 
     headers = {
     'Content-Type': content_type,
