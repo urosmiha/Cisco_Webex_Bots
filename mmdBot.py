@@ -6,14 +6,12 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 app = Flask(__name__)
 
 from apiHandler import apiCallReturnJSON
-from tokenHandler import getBotToken, getBotEmail
+from tokenHandler import getBotToken, getBotEmail, doesFileExist
 
 CONFIG_FILE = "mmd_config.json"
 
 BASE_URL = "https://webexapis.com/v1"
-BOT_TOKEN = getBotToken(CONFIG_FILE)
 
-BOT_EMAIL = getBotEmail(CONFIG_FILE)
 
 @app.route("/", methods=["POST"])
 def getHook():
@@ -37,7 +35,7 @@ def getHook():
             response = getRoomInfo(room_id)
             print(json.dumps(response, indent=4, sort_keys=True))
 
-            sendImgFromURL(room_id, img_url, "Test")
+            sendImgFromURL(room_id, img_url, "Enjoy!")
         else:
             sendMessage(room_id, "Sorry I'm not build for that :'(")
 
@@ -115,5 +113,18 @@ def getRoomInfo(room_id):
 
 
 if __name__ == "__main__":
+
+    print("\n")
+    # If the file does not even exist just exit
+    if not doesFileExist(CONFIG_FILE):
+        print("\n Sort your configs out please... Bye Bye\n")
+        exit()
+
+    global BOT_TOKEN
+    global BOT_EMAIL
+
+    BOT_TOKEN = getBotToken(CONFIG_FILE)
+    BOT_EMAIL = getBotEmail(CONFIG_FILE)
+
     # Hosted on localhost port 5004 - Remember to run "ngrok http 5004"
     app.run(host="0.0.0.0", port=8000, debug=False)
