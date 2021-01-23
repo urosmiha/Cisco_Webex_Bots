@@ -6,35 +6,42 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 app = Flask(__name__)
 
 from apiHandler import apiCallReturnJSON
-from tokenHandler import getBotToken
+from tokenHandler import getBotToken, getBotEmail
 
+CONFIG_FILE = "mmd_config.json"
 
 BASE_URL = "https://webexapis.com/v1"
+BOT_TOKEN = getBotToken(CONFIG_FILE)
 
+BOT_EMAIL = getBotEmail(CONFIG_FILE)
 
 @app.route("/", methods=["POST"])
-def get_login():
+def getHook():
 
-    print(request.method)
-    hook = request.json
-    print(json.dumps(hook, indent=4, sort_keys=True))
+    hook_info = request.json
 
-    # TODO: Make sure you filter the message sent from the BOT so it does not loop
+    message_id = getMsgInfo(hook_info["data"]["id"])
+    message_text = message_id["text"]
 
-    message = getMsgInfo(hook["data"]["id"])
-    print("Bot Said: {}".format(message["text"]))
+    print("Message: {}".format(message_text))
 
-    room_id = hook["data"]["roomId"]
-    img_url = getRandomImgURL()
+    room_id = hook_info["data"]["roomId"]
 
-    response = getRoomInfo(room_id)
-    print(json.dumps(response, indent=4, sort_keys=True))
+    sender_email = hook_info["data"]["personEmail"]
 
-    sendImgFromURL(room_id, img_url, "Test")
+    if sender_email != BOT_EMAIL:
+        if message_text == "panda" or message_text == "Make panda":
 
-    return "Hello"
+            img_url = getRandomImgURL()
 
-    # return redirect("{}?continue_url={}".format(success_url,base_grant_url), code=302)
+            response = getRoomInfo(room_id)
+            print(json.dumps(response, indent=4, sort_keys=True))
+
+            sendImgFromURL(room_id, img_url, "Test")
+        else:
+            sendMessage(room_id, "Sorry I'm not build for that :'(")
+
+    return ""
 
 
 @app.after_request
@@ -59,13 +66,12 @@ def getRandomImgURL():
     return response["link"]
 
 
-
 def getMsgInfo(message_id):
     
     url = "{}/messages/{}".format(BASE_URL, message_id)
     payload = {}
 
-    return apiCallReturnJSON("GET", url, getBotToken(), "application/json", payload)
+    return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", payload)
 
 
 def sendImgFromURL(room_id, img_url, message):
@@ -86,12 +92,26 @@ def sendImgFromURL(room_id, img_url, message):
 
     content_type = payload.content_type
 
-    apiCallReturnJSON("POST", url, getBotToken(), content_type, payload)
+    apiCallReturnJSON("POST", url, BOT_TOKEN, content_type, payload)
+
+
+def sendMessage(room_id, message):
+
+    url = "{}/messages".format(BASE_URL)
+
+    payload = {
+        "roomId": room_id,
+        "text": message
+    }
+
+    payload = json.dumps(payload)
+
+    apiCallReturnJSON("POST", url, BOT_TOKEN, "application/json", payload)
 
 
 def getRoomInfo(room_id):
     url = "{}/rooms/{}".format(BASE_URL, room_id)
-    return apiCallReturnJSON("GET", url, getBotToken(), "application/json", {})
+    return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", {})
 
 
 if __name__ == "__main__":
