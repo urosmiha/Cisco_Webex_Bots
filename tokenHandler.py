@@ -1,22 +1,57 @@
 import json
 
-def getParameters():
+def doesFileExist(config_file):
+    try:
+        json_file = open('config/{}'.format(config_file), 'r')
+        json_file.close()
+        return True
+    except Exception as e:
+        print("Error: {}".format(e))
+        return False   
+
+
+def getParameters(config_file):
     
-    json_file = open('config/mmd_config.json', 'r')
-    parameters = json.load(json_file)
-    json_file.close()
+    try:
+        json_file = open('config/{}'.format(config_file), 'r')
+        parameters = json.load(json_file)
+        json_file.close()
+    except Exception as e:
+        print("Error: {}".format(e))
+        return
 
     return parameters
 
 
-def getBotToken():
+def getBotToken(config_file):
 
-    parameters = getParameters()
-    return parameters['bot_token']
+    parameters = getParameters(config_file)
+    try:
+        return parameters['bot_token']
+    except Exception as e:
+        print("Error: {}".format(e))
+        return
+        
+
+def getBotEmail(config_file):
+    parameters = getParameters(config_file)
+    try:
+        return parameters['bot_email']
+    except Exception as e:
+        print("Error: {}".format(e))
+        return
+
+
+def getWebHookId(config_file):
+    parameters = getParameters(config_file)
+    try:
+        return parameters['webhook_id']
+    except Exception as e:
+        print("Error: {}".format(e))
+        return
 
 
 if __name__ == "__main__":
-    print("This just returns BOT token \n")
-    print("Bot Token: {}\n".format(getBotToken()))
+    print("This does nothing on it's own. It's a helper funtion to be used by others. \n")
     print("There you go! Bye...\n")
     pass
