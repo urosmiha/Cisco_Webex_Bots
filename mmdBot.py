@@ -9,7 +9,6 @@ from apiHandler import apiCallReturnJSON
 from tokenHandler import getBotToken, getBotEmail, doesFileExist
 
 CONFIG_FILE = "mmd_config.json"
-
 BASE_URL = "https://webexapis.com/v1"
 
 
@@ -30,12 +29,12 @@ def getHook():
     if sender_email != BOT_EMAIL:
         if message_text == "panda" or message_text == "Make panda":
 
-            img_url = getRandomImgURL()
-
             response = getRoomInfo(room_id)
             print(json.dumps(response, indent=4, sort_keys=True))
 
+            img_url = getRandomImgURL()
             sendImgFromURL(room_id, img_url, "Enjoy!")
+
         else:
             sendMessage(room_id, "Sorry I'm not build for that :'(")
 
@@ -64,14 +63,6 @@ def getRandomImgURL():
     return response["link"]
 
 
-def getMsgInfo(message_id):
-    
-    url = "{}/messages/{}".format(BASE_URL, message_id)
-    payload = {}
-
-    return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", payload)
-
-
 def sendImgFromURL(room_id, img_url, message):
 
     image_response = requests.get(img_url)
@@ -91,6 +82,14 @@ def sendImgFromURL(room_id, img_url, message):
     content_type = payload.content_type
 
     apiCallReturnJSON("POST", url, BOT_TOKEN, content_type, payload)
+
+
+def getMsgInfo(message_id):
+    
+    url = "{}/messages/{}".format(BASE_URL, message_id)
+    payload = {}
+
+    return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", payload)
 
 
 def sendMessage(room_id, message):
