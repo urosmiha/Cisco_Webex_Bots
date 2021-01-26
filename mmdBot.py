@@ -17,28 +17,40 @@ def getHook():
 
     hook_info = request.json
 
-    message_id = getMsgInfo(hook_info["data"]["id"])
-    message_text = message_id["text"]
+    print(json.dumps(hook_info, indent=4, sort_keys=True))
 
-    print("Message: {}".format(message_text))
+    hook_resource = hook_info["resource"]
 
-    room_id = hook_info["data"]["roomId"]
+    if hook_resource == "messages":
+        message_info = getMsgInfo(hook_info["data"]["id"])
 
-    sender_email = hook_info["data"]["personEmail"]
+        message_text = message_info["text"]
 
-    if sender_email != BOT_EMAIL:
-        if message_text == "panda" or message_text == "Make panda":
+        print("Message: {}".format(message_text))
 
-            response = getRoomInfo(room_id)
-            print(json.dumps(response, indent=4, sort_keys=True))
+        room_id = hook_info["data"]["roomId"]
 
-            img_url = getRandomImgURL()
-            # img_msg = getRandomFact()
-            # sendImgFromURL(room_id, img_url, "")
-            sendCard(room_id, img_url)
+        sender_email = hook_info["data"]["personEmail"]
 
-        else:
-            sendMessage(room_id, "Sorry I'm not build for that :'(")
+        if sender_email != BOT_EMAIL:
+            if message_text == "panda" or message_text == "Make panda":
+
+                response = getRoomInfo(room_id)
+                print(json.dumps(response, indent=4, sort_keys=True))
+
+                img_url = getRandomImgURL()
+                # img_msg = getRandomFact()
+                # sendImgFromURL(room_id, img_url, "")
+                sendCard(room_id, img_url)
+
+            else:
+                sendMessage(room_id, "Sorry I'm not build for that :'(")
+
+    elif hook_resource == "attachmentActions":
+        action_info = getActionInfo(hook_info["data"]["id"])
+
+        print(json.dumps(action_info, indent=4, sort_keys=True))
+    
 
     return ""
 
@@ -122,32 +134,44 @@ def sendCard(room_id, img_url):
                         "url": "{}".format(img_url)
                     },
                     {
-                        "type": "ActionSet",
-                        "actions": [
+                        "type": "Input.ChoiceSet",
+                        "placeholder": "What would you like to see next?",
+                        "choices": [
                             {
-                                "type": "Action.Submit",
-                                "title": "Give me another one"
+                                "title": "Panda",
+                                "value": "panda"
+                            },
+                            {
+                                "title": "Dog",
+                                "value": "dog"
+                            },
+                            {
+                                "title": "Cat",
+                                "value": "cat"
+                            },
+                            {
+                                "title": "I'm Aussie",
+                                "value": "koala"
                             }
-                        ]
+                        ],
+                        "value": "",
+                        "id": "nextAnimal" 
                     },
                     {
                         "type": "TextBlock",
                         "text": "Would you like to see something else?"
                     },
                     {
+                        "type": "Input.Text",
+                        "id": "userWish",
+                        "placeholder": "Type what would you like to see..."
+                    },
+                    {
                         "type": "ActionSet",
                         "actions": [
                             {
                                 "type": "Action.Submit",
-                                "title": "Dog"
-                            },
-                            {
-                                "type": "Action.Submit",
-                                "title": "Cat"
-                            },
-                            {
-                                "type": "Action.Submit",
-                                "title": "I'm Aussie"
+                                "title": "Give me another one"
                             }
                         ]
                     }
@@ -167,6 +191,14 @@ def sendCard(room_id, img_url):
 def getMsgInfo(message_id):
     
     url = "{}/messages/{}".format(BASE_URL, message_id)
+    payload = {}
+
+    return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", payload)
+
+
+def getActionInfo(action_id):
+
+    url = "{}/attachment/actions/{}".format(BASE_URL, action_id)
     payload = {}
 
     return apiCallReturnJSON("GET", url, BOT_TOKEN, "application/json", payload)
