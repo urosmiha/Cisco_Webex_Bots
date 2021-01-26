@@ -33,7 +33,9 @@ def getHook():
             print(json.dumps(response, indent=4, sort_keys=True))
 
             img_url = getRandomImgURL()
-            sendImgFromURL(room_id, img_url, "Enjoy!")
+            # img_msg = getRandomFact()
+            # sendImgFromURL(room_id, img_url, "")
+            sendCard(room_id, img_url)
 
         else:
             sendMessage(room_id, "Sorry I'm not build for that :'(")
@@ -63,6 +65,22 @@ def getRandomImgURL():
     return response["link"]
 
 
+def getRandomFact():
+
+    rndm_base_url = "https://some-random-api.ml"
+    rndm_api_type = "facts"
+    rndm_api_topic = "panda"
+
+    payload = {}
+    headers = {}
+    url = "{}/{}/{}".format(rndm_base_url, rndm_api_type, rndm_api_topic)
+
+    response = requests.request("GET", url=url, headers=headers, data=payload)
+
+    response = json.loads(response.text)
+    return response["fact"]
+
+
 def sendImgFromURL(room_id, img_url, message):
 
     image_response = requests.get(img_url)
@@ -82,6 +100,68 @@ def sendImgFromURL(room_id, img_url, message):
     content_type = payload.content_type
 
     apiCallReturnJSON("POST", url, BOT_TOKEN, content_type, payload)
+
+
+def sendCard(room_id, img_url):
+
+    url = "{}/messages".format(BASE_URL)
+
+    payload = {
+        "roomId": room_id,
+        "text": " ",
+        "attachments": [
+        {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": {
+                "type": "AdaptiveCard",
+                "version": "1.0",
+                "body": [
+                    {
+                        "type": "Image",
+                        "altText": "",
+                        "url": "{}".format(img_url)
+                    },
+                    {
+                        "type": "ActionSet",
+                        "actions": [
+                            {
+                                "type": "Action.Submit",
+                                "title": "Give me another one"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "TextBlock",
+                        "text": "Would you like to see something else?"
+                    },
+                    {
+                        "type": "ActionSet",
+                        "actions": [
+                            {
+                                "type": "Action.Submit",
+                                "title": "Dog"
+                            },
+                            {
+                                "type": "Action.Submit",
+                                "title": "Cat"
+                            },
+                            {
+                                "type": "Action.Submit",
+                                "title": "I'm Aussie"
+                            }
+                        ]
+                    }
+                ],
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+            }
+        }
+        ]
+    }
+
+    payload = json.dumps(payload)
+
+    response = apiCallReturnJSON("POST", url, BOT_TOKEN, "application/json", payload)
+    print(json.dumps(response, indent=4, sort_keys=True))
 
 
 def getMsgInfo(message_id):
