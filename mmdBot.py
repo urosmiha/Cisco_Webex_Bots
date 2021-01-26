@@ -20,6 +20,7 @@ def getHook():
 
     hook_info = request.json
     hook_resource = hook_info["resource"]
+    room_id = hook_info["data"]["roomId"]
 
     # TODO: proper logging
     # print(json.dumps(hook_info, indent=4, sort_keys=True))
@@ -29,7 +30,6 @@ def getHook():
 
         # Lower_case the text for easier handling - it does not metter if animal is spelled with uppercase or lowercase.
         message_text = message_info["text"].lower()
-        room_id = hook_info["data"]["roomId"]
         sender_email = hook_info["data"]["personEmail"]
 
         # response = getRoomInfo(room_id)
@@ -72,8 +72,24 @@ def getHook():
     elif hook_resource == "attachmentActions":
         action_info = getActionInfo(hook_info["data"]["id"])
 
+        # Debug TODO: logging
         print(json.dumps(action_info, indent=4, sort_keys=True))
-    
+
+        user_wish = action_info["inputs"]["userWish"]
+        next_animal = action_info["inputs"]["nextAnimal"]
+
+        if user_wish:
+            message = "Sorry, I'm not that smart. You'll still need to choise one of the options"
+            sendMessage(room_id, message)
+        
+        if next_animal:
+            img_url = getRandomImgURL(next_animal)
+        else:
+            img_url = getRandomImgURL(random.choice(VALID_ANIMALS))
+
+        print(img_url)
+
+        sendCard(room_id, img_url)
 
     return ""
 
