@@ -1,5 +1,6 @@
 import json
 import requests
+import random
 from flask import Flask, request
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
@@ -11,40 +12,62 @@ from tokenHandler import getBotToken, getBotEmail, doesFileExist
 CONFIG_FILE = "mmd_config.json"
 BASE_URL = "https://webexapis.com/v1"
 
+VALID_ANIMALS = ['panda', 'koala', 'dog', 'cat']
+
 
 @app.route("/", methods=["POST"])
 def getHook():
 
     hook_info = request.json
-
-    print(json.dumps(hook_info, indent=4, sort_keys=True))
-
     hook_resource = hook_info["resource"]
+
+    # TODO: proper logging
+    # print(json.dumps(hook_info, indent=4, sort_keys=True))
 
     if hook_resource == "messages":
         message_info = getMsgInfo(hook_info["data"]["id"])
 
-        message_text = message_info["text"]
-
-        print("Message: {}".format(message_text))
-
+        # Lower_case the text for easier handling - it does not metter if animal is spelled with uppercase or lowercase.
+        message_text = message_info["text"].lower()
         room_id = hook_info["data"]["roomId"]
-
         sender_email = hook_info["data"]["personEmail"]
 
+        # response = getRoomInfo(room_id)
+        # For debug purposes - TODO: Replace with proper logging
+        # print(json.dumps(response, indent=4, sort_keys=True))
+
+        # Make sure the message did not come from a Bot so it does not enter endless loop.
+        # I believe the WebHook filter cannot specify from which user NOT to accept notification.
         if sender_email != BOT_EMAIL:
-            if message_text == "panda" or message_text == "Make panda":
-
-                response = getRoomInfo(room_id)
-                print(json.dumps(response, indent=4, sort_keys=True))
-
-                img_url = getRandomImgURL()
-                # img_msg = getRandomFact()
-                # sendImgFromURL(room_id, img_url, "")
+            
+            # If 'help' or 'hello' is received send appropriate respinse and just exit/return so we don't need to look for animals.
+            if message_text == "help":
+                message = "Detail help is on the way - meaning whenever developer feels like it. Just type hello, panda, cat or dog. It's a simple Bot."
+                sendMessage(room_id, message)
+                return ""
+            # If you receive "hello" then send the Card not just the image - Card provides extra options
+            elif message_text == "hello":
+                # Just pick a random URL
+                img_url = getRandomImgURL(random.choice(VALID_ANIMALS))
                 sendCard(room_id, img_url)
+                return ""
 
+            # Check which animal did user specify - THE LAZY and not entirely accurate approach
+            # Just so we don't check spelling for every animal, simply have a list of valid animals
+            # and if user input contains any of these accept it as a valid choise.
+            # Also each of the animals in the VALID_ANIMAL list is actually used as the topic value for the random API call
+            rndm_api_topic = ""
+            for animal in VALID_ANIMALS:
+                if animal in message_text:
+                    rndm_api_topic = animal         
+
+            # If we can recognise the animal from user input then just send them a picture
+            if rndm_api_topic:
+                img_url = getRandomImgURL(rndm_api_topic)
+                # Send just an image with no text
+                sendImgFromURL(room_id, img_url, "")
             else:
-                sendMessage(room_id, "Sorry I'm not build for that :'(")
+                sendMessage(room_id, "Sorry I'm not build for that. Maybe check your spelling or type: help")
 
     elif hook_resource == "attachmentActions":
         action_info = getActionInfo(hook_info["data"]["id"])
@@ -61,11 +84,10 @@ def add_header(response):
     return response
 
 
-def getRandomImgURL():
+def getRandomImgURL(rndm_api_topic):
 
     rndm_base_url = "https://some-random-api.ml"
     rndm_api_type = "img"
-    rndm_api_topic = "panda"
 
     payload = {}
     headers = {}
@@ -77,11 +99,10 @@ def getRandomImgURL():
     return response["link"]
 
 
-def getRandomFact():
+def getRandomFact(rndm_api_topic):
 
     rndm_base_url = "https://some-random-api.ml"
     rndm_api_type = "facts"
-    rndm_api_topic = "panda"
 
     payload = {}
     headers = {}
