@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
         print("What would you like to do?\n")
         print("1 - Create Web Hook\n")
-        print("2 - Update Web Hook URL from webhook_config.json\n")
+        print("2 - Update Web Hook URL\n")
         print("3 - List all Web Hooks\n")
         print("4 - Get Info about specific Web Hook\n")
         print("5 - Delete a Web Hook\n")
@@ -131,10 +131,10 @@ if __name__ == "__main__":
 
         # For choices that require web hook ID ask user to either enter one or use one form mmd_config.json
         if choice == 2 or choice == 4 or choice == 5:
-            user_input = input("Press Y to use {} Web Hook ID from {}! Otherwise enter the Web Hook ID yourself : ".format(webhook_id, config_file))
-        
-            if user_input not in "Y" and user_input not in "y":
-                webhook_id = user_input
+            webhook_id = input("Enter the Web Hook ID : ")
+
+        # You can just hard code webhook id yourself here if want
+        # webhook_id = "My Web Hook ID"
 
         # Based on choise call appropriate function
         # CREATE WEB HOOK
@@ -150,7 +150,10 @@ if __name__ == "__main__":
                 print("Bye Bye then")
         # ----------------- UPDATE URL for WEB HOOK
         elif choice == 2:
+            # You can also hard code this if easier or often used
+            # target_url = "...."
             target_url = input("Enter New TargetUrl: ")
+
             updateWebHook(webhook_id, target_url, bot_token)
         # ----------------- LIST ALL WEB HOOKS
         elif choice == 3:
