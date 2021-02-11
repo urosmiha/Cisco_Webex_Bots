@@ -15,5 +15,6 @@ def apiCallReturnJSON(method, url, token, content_type, payload):
 
     response = requests.request(method, url, headers=headers, data=payload)
     print("Response Status: {} \n".format(response))
+    print("Response Reason: {} \n".format(response.text))
     
     return json.loads(response.text)

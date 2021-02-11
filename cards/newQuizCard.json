@@ -1,0 +1,129 @@
+{
+    "roomId": "",
+    "text": " ",
+    "attachments": [
+    {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {
+            "type": "AdaptiveCard",
+            "version": "1.0",
+            "body": [
+                {
+                    "type": "TextBlock",
+                    "text": "Welcome to Quizy!",
+                    "size": "Large"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "You just created a new quiz."
+                },
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Quiz ID:",
+                                    "separator": true,
+                                    "size": "Medium",
+                                    "weight": "Bolder",
+                                    "horizontalAlignment": "Right"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "ABCD1234",
+                                    "id": "quiz_id",
+                                    "size": "Medium",
+                                    "weight": "Bolder",
+                                    "color": "Warning",
+                                    "horizontalAlignment": "Left"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch"
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch"
+                        }
+                    ]
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "You can use this Quiz ID to access your quiz from any Webex Teams space. If you are the owner of the quiz you can also edit it using the same Quiz ID.",
+                    "wrap": true
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Remember, you can always type 'help' for detailed information on how to use the tool.",
+                    "wrap": true,
+                    "separator": true
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "Let's begin now...",
+                    "size": "Medium",
+                    "weight": "Bolder",
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "stretch"
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "Save and Exit",
+                                            "style": "positive",
+                                            "id": "done_quiz"
+                                        }
+                                    ],
+                                    "horizontalAlignment": "Right"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "Add Question",
+                                            "id": "add_question"
+                                        }
+                                    ],
+                                    "id": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+        }
+    }
+    ]
+}

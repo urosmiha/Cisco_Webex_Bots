@@ -97,11 +97,11 @@ if __name__ == "__main__":
     '''
     print("\n Welcome to Web Hook Handler... ")
     # Note that config file must be json type !
-    config_file = input("Enter the name of the json config file for the application: ")
+    # config_file = input("Enter the name of the json config file for the application: ")
 
     # If you need something quick but less generic you can just hard code this.
     # *************************
-    # config_file = 'mmd_config.json'
+    config_file = 'bot_config.json'
     # *************************
 
     # If the file does not even exist just exit
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         user_input = input("Enter appropriate number: ")
         choice = int(user_input)
 
-        # For choices that require web hook ID ask user to either enter one or use one form mmd_config.json
+        # For choices that require web hook ID ask user to either enter one or use one form bot_config.json
         if choice == 2 or choice == 4 or choice == 5:
             webhook_id = input("Enter the Web Hook ID : ")
 
