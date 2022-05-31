@@ -24,8 +24,6 @@ Some files are common for all Bots and work regardless of the Bot you are using.
 
 Here are a few things you would need to get started. Everything is well documented by each provider and fairly straight forward, so I would not be re-itterating, just follow the links.
 
-PLACEHOLDER: If you still need a bit of quidance or can't be bothered reading all this, you can checkout my video on this and follow those instructions: _comming soon..._
-
 ## Git (duh...)
 
 or maybe not really actually. You can always just download zip file... and have multiple versions 50 differet folders? Please don't do that.
